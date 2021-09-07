@@ -1,0 +1,6 @@
+*.hprof
+*.hprof.xz
+*.hwcache
+*-bkp*/
+*.jfr
+.fabric/
