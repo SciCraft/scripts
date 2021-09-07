@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily backup
+
+[Timer]
+OnCalendar=*-*-* 4:00:00
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

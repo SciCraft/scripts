@@ -1,0 +1,3 @@
+#!/usr/bin/fish
+source ../server-lib.fish
+launch-fabric 1.17.1

@@ -1,0 +1,9 @@
+[Unit]
+Description=Minecraft Server Monitoring
+
+[Timer]
+OnActiveSec=30s
+OnUnitActiveSec=30s
+
+[Install]
+WantedBy=timers.target

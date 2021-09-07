@@ -1,0 +1,6 @@
+[Unit]
+Description=Minecraft Server Backup for %i
+
+[Service]
+WorkingDirectory=/srv/minecraft
+ExecStart=/srv/minecraft/backup.sh %i
