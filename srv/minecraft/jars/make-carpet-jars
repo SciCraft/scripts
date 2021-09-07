@@ -1,0 +1,19 @@
+#!/usr/bin/fish
+set ZIP (realpath $argv[1])
+set DIR (basename $ZIP .zip)
+
+pushd /srv/minecraft/jars
+
+unzip -d $DIR $ZIP
+set JAR_BASE minecraft_server_1.12.2_(echo $DIR | tr '[:upper:]' '[:lower:]')
+cp minecraft_server.1.12.2.jar "$JAR_BASE".jar
+cd $DIR
+jar -uf ../"$JAR_BASE".jar *
+cd ..
+java -jar specialsource-1.8.6-20181205.jar -i "$JAR_BASE".jar -o ./"$JAR_BASE"-deobf.jar -m mcp-1.12.2-srg/joined.srg
+cp "$JAR_BASE"-deobf.jar "$JAR_BASE"-deobf-worldedit.jar
+cd worldedit
+jar -uf ../"$JAR_BASE"-deobf-worldedit.jar *
+
+popd
+

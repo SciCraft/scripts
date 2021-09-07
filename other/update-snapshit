@@ -1,0 +1,13 @@
+#!/usr/bin/fish
+set latest (curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json | jq -r '.versions[0].id')
+echo Updating to $latest
+echo '#!/usr/bin/fish' > /srv/minecraft/snapshit/run
+echo 'source ../server-lib.fish' >> /srv/minecraft/snapshit/run
+if curl -LfsI "https://maven.fabricmc.net/net/fabricmc/intermediary/$latest/intermediary-$latest.jar" > /dev/null
+  echo Fabric is available
+  echo 'launch-fabric "'$latest'"' >> /srv/minecraft/snapshit/run
+else
+  echo Fabric is not available
+  echo 'launch-vanilla "'$latest'"' >> /srv/minecraft/snapshit/run
+end
+sudo systemctl restart minecraft@snapshit
