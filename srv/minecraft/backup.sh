@@ -4,7 +4,7 @@
 
 SRC="/srv/minecraft/$1/"
 SNAP="/srv/minecraft/backup/$1"
-OPTS="-rltgoi --delay-updates --delete --chmod=a-w --exclude-from=/srv/minecraft/backup/exclude.txt"
+OPTS="-rltgoi --delay-updates --delete --chmod=g=u --exclude-from=/srv/minecraft/backup/exclude.txt"
 MINCHANGES=20
 
 # run this process with real low priority
