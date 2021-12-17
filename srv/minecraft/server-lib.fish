@@ -2,7 +2,7 @@
 set NAME (basename (pwd))
 set STDIN /srv/minecraft/input/$NAME
 
-set OTHER_JAVA_OPTS '-XX:+UnlockExperimentalVMOptions -XX:+FlightRecorder'
+set OTHER_JAVA_OPTS '-XX:+UnlockExperimentalVMOptions -XX:+FlightRecorder -Dlog4j2.formatMsgNoLookups=true -Dlog4j.configurationFile=/srv/minecraft/jars/log4j2_112-116.xml'
 set GC_OPTS '-XX:+UseG1GC -XX:+DisableExplicitGC -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=80 -XX:G1MixedGCLiveThresholdPercent=85 -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages -XX:+UseLargePages -XX:LargePageSizeInBytes=2M -XX:+ParallelRefProcEnabled'
 #GCOPTS='-XX:+UseConcMarkSweepGC -XX:MaxGCPauseMillis=100'
 set HEAP_OPTS '-Xmx4094M -Xms4094M -XX:HeapBaseMinAddress=1 -XX:+HeapDumpOnOutOfMemoryError'
