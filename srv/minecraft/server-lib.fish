@@ -6,8 +6,15 @@ set OTHER_JAVA_OPTS '-XX:+UnlockExperimentalVMOptions -XX:+FlightRecorder -Dlog4
 set GC_OPTS '-XX:+UseG1GC -XX:+DisableExplicitGC -XX:SurvivorRatio=32 -XX:MaxTenuringThreshold=1 -XX:G1NewSizePercent=30 -XX:G1MaxNewSizePercent=80 -XX:G1MixedGCLiveThresholdPercent=85 -XX:+AlwaysPreTouch -XX:+UseTransparentHugePages -XX:+UseLargePages -XX:LargePageSizeInBytes=2M -XX:+ParallelRefProcEnabled'
 #GCOPTS='-XX:+UseConcMarkSweepGC -XX:MaxGCPauseMillis=100'
 set HEAP_OPTS '-Xmx4094M -Xms4094M -XX:HeapBaseMinAddress=1 -XX:+HeapDumpOnOutOfMemoryError'
-set -x JAVA_HOME /usr/lib/jvm/adoptopenjdk-16-hotspot-amd64/ 
-set FABRIC_LOADER_VERSION 0.11.3
+set -x JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64/
+
+set MAVEN https://maven.fabricmc.net/
+set FABRIC_LOADER_VERSION 0.12.12
+set TINY_MAPPINGS_PARSER_VERSION 0.3.0+build.17
+set MIXIN_VERSION 0.10.7+mixin.0.8.4
+set TINY_REMAPPER_VERSION 0.6.0
+set ACCESS_WIDENER_VERSION 2.0.1
+set ASM_VERSION 9.2
 
 function make-input
   if test ! -p "$STDIN"
@@ -16,11 +23,24 @@ function make-input
 end
 
 function artifact
+  echo /srv/minecraft/jars/(artifact-rel $argv)
+end
+
+function artifact-rel
   if test (count $argv) -gt 3
-    echo /srv/minecraft/jars/(echo $argv[1] | tr . /)/$argv[2]/$argv[3]/$argv[2]-$argv[3]-$argv[4].jar
+    echo (echo $argv[1] | tr . /)/$argv[2]/$argv[3]/$argv[2]-$argv[3]-$argv[4].jar
   else
-    echo /srv/minecraft/jars/(echo $argv[1] | tr . /)/$argv[2]/$argv[3]/$argv[2]-$argv[3].jar
+    echo (echo $argv[1] | tr . /)/$argv[2]/$argv[3]/$argv[2]-$argv[3].jar
   end
+end
+
+function artifact-dl
+  set file (artifact $argv[2..-1])
+  if test ! -e "$file"
+    mkdir -p (dirname "$file")
+    curl -o "$file" "$argv[1]/"(artifact-rel $argv[2..-1]) > /dev/null
+  end
+  echo $file
 end
 
 function vanilla-jar
@@ -57,7 +77,18 @@ function launch-fabric
     cp -r "mods-$argv[1]" mods
   end
   echo serverJar=(vanilla-jar "$argv[1]") > fabric-server-launcher.properties
-  set cp (artifact net.fabricmc fabric-server-launch $FABRIC_LOADER_VERSION):(artifact net.fabricmc intermediary "$argv[1]")
+  set tiny_mp (artifact-dl $MAVEN net.fabricmc tiny-mappings-parser "$TINY_MAPPINGS_PARSER_VERSION")
+  set mixin (artifact-dl $MAVEN net.fabricmc sponge-mixin "$MIXIN_VERSION")
+  set tiny_remapper (artifact-dl $MAVEN net.fabricmc tiny-remapper "$TINY_REMAPPER_VERSION")
+  set access_widener (artifact-dl $MAVEN net.fabricmc access-widener "$ACCESS_WIDENER_VERSION")
+  set asm (artifact-dl $MAVEN org.ow2.asm asm "$ASM_VERSION")
+  set asm_analysis (artifact-dl $MAVEN org.ow2.asm asm-analysis "$ASM_VERSION")
+  set asm_commons (artifact-dl $MAVEN org.ow2.asm asm-commons "$ASM_VERSION")
+  set asm_tree (artifact-dl $MAVEN org.ow2.asm asm-tree "$ASM_VERSION")
+  set asm_util (artifact-dl $MAVEN org.ow2.asm asm-util "$ASM_VERSION")
+  set fabric_loader (artifact-dl $MAVEN net.fabricmc fabric-loader "$FABRIC_LOADER_VERSION")
+  set intermediary (artifact-dl $MAVEN net.fabricmc intermediary "$argv[1]")
+  set cp "$tiny_mp":"$mixin":"$tiny_remapper":"$access_widener":"$asm":"$asm_analysis":"$asm_commons":"$asm_tree":"$asm_util":"$fabric_loader":"$intermediary"
   set mainClass net.fabricmc.loader.launch.server.FabricServerLauncher
   if test (count $argv) -gt 1
     launch-cp $cp $mainClass $argv[2..-1]
