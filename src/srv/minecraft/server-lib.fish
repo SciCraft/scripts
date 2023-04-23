@@ -9,12 +9,12 @@ set HEAP_OPTS '-Xmx4094M -Xms4094M -XX:HeapBaseMinAddress=1 -XX:+HeapDumpOnOutOf
 set -x JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64/
 
 set MAVEN https://maven.fabricmc.net/
-set FABRIC_LOADER_VERSION 0.12.12
+set FABRIC_LOADER_VERSION 0.14.18
 set TINY_MAPPINGS_PARSER_VERSION 0.3.0+build.17
-set MIXIN_VERSION 0.10.7+mixin.0.8.4
-set TINY_REMAPPER_VERSION 0.6.0
-set ACCESS_WIDENER_VERSION 2.0.1
-set ASM_VERSION 9.2
+set MIXIN_VERSION 0.12.4+mixin.0.8.5
+set TINY_REMAPPER_VERSION 0.8.2
+set ACCESS_WIDENER_VERSION 2.1.0
+set ASM_VERSION 9.4
 
 function make-input
   if test ! -p "$STDIN"
@@ -72,8 +72,10 @@ end
 
 function launch-fabric
   setup-fabric "$argv[1]"
-  if test -e "mods-$argv[1]"
+  if test -e mods
     rm -rf mods
+  end
+  if test -e "mods-$argv[1]"
     cp -r "mods-$argv[1]" mods
   end
   echo serverJar=(vanilla-jar "$argv[1]") > fabric-server-launcher.properties

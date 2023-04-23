@@ -4,3 +4,5 @@
 *-bkp*/
 *.jfr
 .fabric/
+libraries/
+versions/

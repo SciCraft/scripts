@@ -3,7 +3,7 @@ Description=Restart copy with latest backup
 
 [Timer]
 OnCalendar=*-*-* 5:00:00
-RandomizedDelaySec=300
+RandomizedDelaySec=30
 
 [Install]
 WantedBy=timers.target

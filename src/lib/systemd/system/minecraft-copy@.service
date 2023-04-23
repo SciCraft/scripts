@@ -1,0 +1,8 @@
+[Unit]
+Description=Minecraft copy restart
+
+[Service]
+User=minecraft
+Group=minecraft
+WorkingDirectory=/srv/minecraft/%i
+ExecStart=/srv/minecraft/%i/update.sh

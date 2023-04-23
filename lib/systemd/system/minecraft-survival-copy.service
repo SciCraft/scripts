@@ -1,8 +1,0 @@
-[Unit]
-Description=Survival copy restart
-
-[Service]
-User=minecraft
-Group=minecraft
-WorkingDirectory=/srv/minecraft/survival-copy
-ExecStart=/srv/minecraft/survival-copy/update.sh

@@ -4,7 +4,7 @@
 
 SRC="/srv/minecraft/$1/"
 SNAP="/srv/minecraft/backup/$1"
-OPTS="-rltgoi --delay-updates --delete --chmod=g=u --exclude-from=/srv/minecraft/backup/exclude.txt"
+OPTS="-rltgoi --delay-updates --delete --exclude-from=/srv/minecraft/backup/exclude.txt"
 MINCHANGES=20
 
 # run this process with real low priority
@@ -32,8 +32,15 @@ if [ $COUNT -gt $MINCHANGES ] ; then
   fi
 fi
 
+# announce
+echo tellraw @a '{"text": "Backup done!", "color": "green"}' > /srv/minecraft/input/$1
+
+# run custom script (Upload to S3)
 if [ -x "$SRC/post-backup.sh" ] ; then
   sudo -u minecraft "$SRC/post-backup.sh"
 fi
 
-echo tellraw @a '{"text": "Backup done!", "color": "green"}' > /srv/minecraft/input/$1
+# create external backup
+if [ ! -z "$BORG_PATH" ] ; then
+  borg create --progress --stats "$BORG_PATH/$1"::$(date +%Y-%m-%d) "$SNAP/latest/"*
+fi
